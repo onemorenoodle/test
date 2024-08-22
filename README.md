@@ -1,3 +1,20 @@
-# Sample Node.js application
+# syntax=docker/dockerfile:1
 
-This repository is a sample Node.js application for Docker's documentation.
+FROM node:${NODE_VERSION}-alpine
+
+ENV NODE_ENV = production
+
+WORKDIR /usr/src/app
+
+RUN --mount=type=bind,source=package.json target=package.json \
+    --mount=type=bind,source=package-lock.json,target=package-lock.json \
+    --mount=type=cache,target=/root/.npm \
+    npm ci --omit=dev
+
+USER node
+
+COPY . .
+
+EXPOSE 3000
+
+CMD node src/index.js
